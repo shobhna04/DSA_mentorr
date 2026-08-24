@@ -1,10 +1,18 @@
 import os
+import streamlit as st
 from dotenv import load_dotenv
 from google import genai
 
 load_dotenv()
 
-client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+# Try st.secrets first (Streamlit Cloud), then fall back to os.environ (local .env)
+def _get_secret(key):
+    try:
+        return st.secrets[key]
+    except (KeyError, FileNotFoundError):
+        return os.environ.get(key)
+
+client = genai.Client(api_key=_get_secret("GEMINI_API_KEY"))
 
 SYSTEM_PROMPT = """
 You are an expert DSA (Data Structures & Algorithms) Mentor. 
