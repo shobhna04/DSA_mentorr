@@ -3,7 +3,10 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import streamlit as st
+from streamlit_cookies_controller import CookieController
 from auth import sign_up, sign_in, get_current_user
+
+controller = CookieController()
 
 # If already logged in, go to homepage
 if get_current_user():
@@ -26,6 +29,10 @@ with login_tab:
             with st.spinner("Logging in..."):
                 result = sign_in(login_email, login_password)
             if result["success"]:
+                # Save refresh token to cookie for persistent login
+                session = st.session_state.get("session")
+                if session:
+                    controller.set("dsa_refresh_token", session.refresh_token)
                 st.success("Logged in! 🎉")
                 st.balloons()
                 st.rerun()
