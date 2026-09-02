@@ -63,13 +63,16 @@ Previously given hints:
 Please provide: {level_names[hint_level]}
 """
 
-    response = client.models.generate_content(
-        model="gemini-3.6-flash",
-        contents=prompt,
-        config={
-            "system_instruction": SYSTEM_PROMPT,
-            "temperature": 0.2
-        }
-    )
-    
-    return response.text
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt,
+            config={
+                "system_instruction": SYSTEM_PROMPT,
+                "temperature": 0.2
+            }
+        )
+        return response.text
+    except Exception as e:
+        return f"⚠️ AI hint generation failed: {str(e)}. Please try again."
+

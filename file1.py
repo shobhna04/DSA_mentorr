@@ -7,6 +7,16 @@ st.set_page_config(
     layout="wide"
 )
 
+# --- Hide Streamlit & GitHub branding ---
+st.markdown("""
+<style>
+    footer {visibility: hidden;}
+    #MainMenu {visibility: hidden;}
+    [data-testid="stToolbar"] {visibility: hidden;}
+    header[data-testid="stHeader"] {visibility: hidden;}
+</style>
+""", unsafe_allow_html=True)
+
 # Initialize session state
 if "user" not in st.session_state:
     st.session_state["user"] = None
