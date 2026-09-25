@@ -65,7 +65,7 @@ Please provide: {level_names[hint_level]}
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-3.8-flash",
             contents=prompt,
             config={
                 "system_instruction": SYSTEM_PROMPT,
