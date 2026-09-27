@@ -39,8 +39,15 @@ if st.session_state["user"] is None:
                 # Update cookie with fresh token
                 controller.set("dsa_refresh_token", response.session.refresh_token)
                 st.rerun()
-        except Exception:
-            controller.remove("dsa_refresh_token")
+            else:
+                # Token expired or invalid — clear it
+                controller.remove("dsa_refresh_token")
+        except Exception as e:
+            # Only remove cookie if token is truly invalid, not on transient errors
+            error_msg = str(e).lower()
+            if "invalid" in error_msg or "expired" in error_msg or "revoked" in error_msg:
+                controller.remove("dsa_refresh_token")
+            # else: keep the cookie and let user retry on next page load
 
 # --- Define all pages ---
 login_page = st.Page("pages/page2_auth.py", title="Login", icon="🔐")
