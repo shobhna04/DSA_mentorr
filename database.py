@@ -8,14 +8,18 @@ def _db():
     return get_client()
 
 def create_question(user_id, title, topic, difficulty, problem_statement):
-    response = _db().table("questions").insert({
-        "user_id": user_id,
-        "title": title,
-        "topic": topic,
-        "difficulty": difficulty,
-        "problem_statement": problem_statement
-    }).execute()
-    return response.data[0] if response.data else None
+    try:
+        response = _db().table("questions").insert({
+            "user_id": user_id,
+            "title": title,
+            "topic": topic,
+            "difficulty": difficulty,
+            "problem_statement": problem_statement
+        }).execute()
+        return response.data[0] if response.data else None
+    except Exception as e:
+        st.error(f"DB Error: {e}")
+        return None
 
 def get_user_questions(user_id):
     response = _db().table("questions").select("*").eq("user_id", user_id).order("created_at", desc=True).execute()
