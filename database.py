@@ -13,8 +13,16 @@ def ensure_profile_exists(user_id):
         db = _db()
         existing = db.table("profiles").select("id").eq("id", user_id).execute().data
         if not existing:
+            # Get username from session user metadata
+            user = st.session_state.get("user")
+            username = "user"
+            if user and hasattr(user, "user_metadata"):
+                username = user.user_metadata.get("username", user.email.split("@")[0] if user.email else "user")
+            elif user and hasattr(user, "email") and user.email:
+                username = user.email.split("@")[0]
             db.table("profiles").insert({
                 "id": user_id,
+                "username": username,
                 "total_xp": 0,
                 "current_streak": 0,
                 "longest_streak": 0,

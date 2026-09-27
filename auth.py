@@ -17,6 +17,7 @@ def sign_up(email, password, username):
             try:
                 supabase.table("profiles").upsert({
                     "id": response.user.id,
+                    "username": username,
                     "total_xp": 0,
                     "current_streak": 0,
                     "longest_streak": 0,
@@ -39,8 +40,14 @@ def sign_in(email, password):
         # Ensure profile exists for this user
         if response.user:
             try:
+                uname = "user"
+                if hasattr(response.user, "user_metadata") and response.user.user_metadata:
+                    uname = response.user.user_metadata.get("username", response.user.email.split("@")[0] if response.user.email else "user")
+                elif response.user.email:
+                    uname = response.user.email.split("@")[0]
                 supabase.table("profiles").upsert({
                     "id": response.user.id,
+                    "username": uname,
                     "total_xp": 0,
                     "current_streak": 0,
                     "longest_streak": 0,
