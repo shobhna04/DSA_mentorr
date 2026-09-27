@@ -7,8 +7,25 @@ def _db():
         return get_authenticated_client(session.access_token)
     return get_client()
 
+def ensure_profile_exists(user_id):
+    """Create a profile row if it doesn't exist yet."""
+    try:
+        db = _db()
+        existing = db.table("profiles").select("id").eq("id", user_id).execute().data
+        if not existing:
+            db.table("profiles").insert({
+                "id": user_id,
+                "total_xp": 0,
+                "current_streak": 0,
+                "longest_streak": 0,
+                "last_active_date": None
+            }).execute()
+    except Exception:
+        pass  # Profile might already exist due to race condition
+
 def create_question(user_id, title, topic, difficulty, problem_statement):
     try:
+        ensure_profile_exists(user_id)
         response = _db().table("questions").insert({
             "user_id": user_id,
             "title": title,
