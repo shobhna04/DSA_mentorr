@@ -26,8 +26,22 @@ if "session" not in st.session_state:
 # --- Cookie-based persistent login ---
 controller = CookieController()
 
+import time
+
 if st.session_state["user"] is None:
+    # CookieController needs a moment to load cookies from browser
+    # on first render after refresh, cookies may not be available yet
+    if "cookie_checked" not in st.session_state:
+        st.session_state["cookie_checked"] = False
+
     refresh_token = controller.get("dsa_refresh_token")
+
+    # If no token found on first try, wait briefly and rerun once
+    if refresh_token is None and not st.session_state["cookie_checked"]:
+        st.session_state["cookie_checked"] = True
+        time.sleep(0.5)
+        st.rerun()
+
     if refresh_token:
         try:
             from supabase_client import get_client
@@ -38,16 +52,14 @@ if st.session_state["user"] is None:
                 st.session_state["session"] = response.session
                 # Update cookie with fresh token
                 controller.set("dsa_refresh_token", response.session.refresh_token)
+                st.session_state["cookie_checked"] = True
                 st.rerun()
             else:
-                # Token expired or invalid — clear it
                 controller.remove("dsa_refresh_token")
         except Exception as e:
-            # Only remove cookie if token is truly invalid, not on transient errors
             error_msg = str(e).lower()
             if "invalid" in error_msg or "expired" in error_msg or "revoked" in error_msg:
                 controller.remove("dsa_refresh_token")
-            # else: keep the cookie and let user retry on next page load
 
 # --- Define all pages ---
 login_page = st.Page("pages/page2_auth.py", title="Login", icon="🔐")
