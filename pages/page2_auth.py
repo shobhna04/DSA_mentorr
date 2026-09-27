@@ -32,7 +32,10 @@ with login_tab:
                 # Save refresh token to cookie for persistent login
                 session = st.session_state.get("session")
                 if session:
-                    controller.set("dsa_refresh_token", session.refresh_token)
+                    try:
+                        controller.set("dsa_refresh_token", session.refresh_token)
+                    except (TypeError, Exception):
+                        pass  # Cookie will be set on next page load
                 st.success("Logged in! 🎉")
                 st.balloons()
                 st.rerun()

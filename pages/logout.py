@@ -12,7 +12,10 @@ st.title("🚪 Logging out...")
 
 if st.session_state.get("user"):
     # Clear the login cookie first
-    controller.remove("dsa_refresh_token")
+    try:
+        controller.remove("dsa_refresh_token")
+    except (TypeError, Exception):
+        pass
     sign_out()
     st.rerun()
 else:

@@ -55,15 +55,24 @@ if st.session_state["user"] is None:
                 st.session_state["user"] = response.user
                 st.session_state["session"] = response.session
                 # Update cookie with fresh token
-                controller.set("dsa_refresh_token", response.session.refresh_token)
+                try:
+                    controller.set("dsa_refresh_token", response.session.refresh_token)
+                except (TypeError, Exception):
+                    pass
                 st.session_state["cookie_checked"] = True
                 st.rerun()
             else:
-                controller.remove("dsa_refresh_token")
+                try:
+                    controller.remove("dsa_refresh_token")
+                except (TypeError, Exception):
+                    pass
         except Exception as e:
             error_msg = str(e).lower()
             if "invalid" in error_msg or "expired" in error_msg or "revoked" in error_msg:
-                controller.remove("dsa_refresh_token")
+                try:
+                    controller.remove("dsa_refresh_token")
+                except (TypeError, Exception):
+                    pass
 
 # --- Define all pages ---
 login_page = st.Page("pages/page2_auth.py", title="Login", icon="🔐")
