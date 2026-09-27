@@ -34,7 +34,11 @@ if st.session_state["user"] is None:
     if "cookie_checked" not in st.session_state:
         st.session_state["cookie_checked"] = False
 
-    refresh_token = controller.get("dsa_refresh_token")
+    # CookieController may not have loaded cookies yet — handle gracefully
+    try:
+        refresh_token = controller.get("dsa_refresh_token")
+    except (TypeError, Exception):
+        refresh_token = None
 
     # If no token found on first try, wait briefly and rerun once
     if refresh_token is None and not st.session_state["cookie_checked"]:
