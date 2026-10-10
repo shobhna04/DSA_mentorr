@@ -13,7 +13,8 @@ st.markdown("""
     footer {visibility: hidden;}
     #MainMenu {visibility: hidden;}
     [data-testid="stToolbar"] {visibility: hidden;}
-    header[data-testid="stHeader"] {visibility: hidden;}
+    [data-testid="stHeader"] {background: transparent;}
+    [data-testid="stDecoration"] {display: none;}
 </style>
 """, unsafe_allow_html=True)
 
